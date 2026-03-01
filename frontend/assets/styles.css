@@ -1,13 +1,14 @@
 ﻿:root {
-  --bg: #f4f7f5;
-  --surface: rgba(255, 255, 255, 0.9);
-  --ink: #18302a;
-  --muted: #546963;
-  --brand: #0f9d84;
-  --brand-2: #e45a2f;
-  --danger: #c0382b;
-  --border: #dce5e2;
-  --shadow: 0 12px 30px rgba(19, 57, 50, 0.12);
+  --bg: #080808;
+  --bg-soft: #131313;
+  --surface: #ffffff;
+  --ink: #111111;
+  --muted: #666666;
+  --brand: #ffd400;
+  --brand-strong: #ffbf00;
+  --danger: #111111;
+  --border: #e8e8e8;
+  --shadow: 0 16px 40px rgba(0, 0, 0, 0.38);
 }
 
 * {
@@ -18,31 +19,34 @@ body {
   margin: 0;
   min-height: 100vh;
   font-family: "Segoe UI", "Trebuchet MS", sans-serif;
-  color: var(--ink);
-  background: linear-gradient(180deg, #eef4f1 0%, #f9fbfa 100%);
+  color: #f4f4f4;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(255, 212, 0, 0.16), transparent 36%),
+    radial-gradient(circle at 88% 0%, rgba(255, 212, 0, 0.12), transparent 30%),
+    linear-gradient(180deg, #0a0a0a 0%, #111111 100%);
 }
 
 .bg-shape {
   position: fixed;
   border-radius: 50%;
-  filter: blur(40px);
+  filter: blur(48px);
   z-index: -1;
 }
 
 .shape-a {
-  width: 340px;
-  height: 340px;
-  top: -80px;
+  width: 320px;
+  height: 320px;
+  top: -90px;
   right: -70px;
-  background: rgba(15, 157, 132, 0.25);
+  background: rgba(255, 212, 0, 0.22);
 }
 
 .shape-b {
-  width: 320px;
-  height: 320px;
-  left: -90px;
-  bottom: 20%;
-  background: rgba(228, 90, 47, 0.18);
+  width: 300px;
+  height: 300px;
+  left: -100px;
+  bottom: 12%;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .app-shell {
@@ -61,25 +65,31 @@ body {
 
 .topbar h1 {
   margin: 2px 0 0;
-  font-size: 1.35rem;
+  font-size: 1.45rem;
+  color: #ffffff;
 }
 
 .muted {
   color: var(--muted);
 }
 
+.topbar .muted {
+  color: #dadada;
+}
+
 .card {
   background: var(--surface);
+  color: var(--ink);
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 14px;
   box-shadow: var(--shadow);
-  backdrop-filter: blur(8px);
   margin-bottom: 12px;
 }
 
 .hero {
-  background: linear-gradient(130deg, rgba(15, 157, 132, 0.1), rgba(228, 90, 47, 0.08));
+  background: linear-gradient(140deg, #fff8ce 0%, #ffffff 55%, #fff1a6 100%);
+  border-color: #f0df9e;
 }
 
 .stats-row {
@@ -90,7 +100,8 @@ body {
 }
 
 .stats-row div {
-  background: rgba(255, 255, 255, 0.7);
+  background: #ffffff;
+  border: 1px solid #efefef;
   border-radius: 12px;
   padding: 10px;
   text-align: center;
@@ -128,17 +139,23 @@ button {
 
 button.primary {
   background: var(--brand);
-  color: white;
+  color: #111111;
+  font-weight: 600;
+}
+
+button.primary:hover {
+  background: var(--brand-strong);
 }
 
 button.danger {
   background: var(--danger);
-  color: white;
+  color: #ffffff;
 }
 
 button.ghost {
-  border: 1px solid var(--border);
-  background: white;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
 .stack {
@@ -149,10 +166,11 @@ button.ghost {
 input,
 textarea,
 select {
-  border: 1px solid var(--border);
+  border: 1px solid #dddddd;
   border-radius: 10px;
   padding: 10px;
-  background: white;
+  background: #ffffff;
+  color: #111111;
 }
 
 textarea {
@@ -177,21 +195,22 @@ textarea {
   grid-template-columns: repeat(5, 1fr);
   gap: 6px;
   padding: 8px 10px 12px;
-  background: rgba(250, 252, 251, 0.95);
-  border-top: 1px solid var(--border);
+  background: rgba(10, 10, 10, 0.96);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
 }
 
 .bottom-nav button {
   padding: 8px 6px;
   border-radius: 10px;
-  background: white;
+  background: #1a1a1a;
+  color: #ffffff;
   font-size: 0.8rem;
 }
 
 .bottom-nav button.active {
-  background: linear-gradient(135deg, #0f9d84, #137f6c);
-  color: white;
+  background: var(--brand);
+  color: #111111;
 }
 
 .list {
@@ -200,7 +219,8 @@ textarea {
 }
 
 .item {
-  background: white;
+  background: #ffffff;
+  color: #111111;
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 10px;
@@ -224,8 +244,8 @@ textarea {
   min-height: 50vh;
   max-height: 60vh;
   overflow: auto;
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid var(--border);
+  background: #111111;
+  border: 1px solid rgba(255, 212, 0, 0.3);
   border-radius: 16px;
   padding: 10px;
   margin-bottom: 10px;
@@ -242,12 +262,14 @@ textarea {
 
 .chat-msg.user {
   margin-left: auto;
-  background: #def5f0;
+  background: var(--brand);
+  color: #111111;
 }
 
 .chat-msg.assistant {
   margin-right: auto;
-  background: #fff2eb;
+  background: #ffffff;
+  color: #111111;
 }
 
 .chat-form {
@@ -259,7 +281,7 @@ textarea {
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(24, 48, 42, 0.6);
+  background: rgba(0, 0, 0, 0.7);
   display: grid;
   place-items: center;
   padding: 14px;
@@ -270,9 +292,40 @@ textarea {
   max-width: 640px;
   max-height: 90vh;
   overflow: auto;
-  background: white;
+  background: #ffffff;
+  color: #111111;
   border-radius: 18px;
   padding: 18px;
+  border: 1px solid #ececec;
+}
+
+.onboarding-quote {
+  margin: 10px 0 14px;
+  padding: 10px 12px;
+  border-left: 4px solid var(--brand);
+  background: #fff8ce;
+  border-radius: 10px;
+  line-height: 1.35;
+  color: #1a1a1a;
+}
+
+.ob-progress {
+  font-weight: 600;
+}
+
+.ob-step {
+  display: grid;
+  gap: 8px;
+}
+
+.ob-nav {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.ob-nav button {
+  min-width: 110px;
 }
 
 .checkbox-wrap {

@@ -15,6 +15,12 @@ const state = {
   profile: null,
   chat: []
 };
+const onboardingState = {
+  initialized: false,
+  steps: [],
+  current: 0
+};
+let eventsBound = false;
 
 const API_BASE = new URLSearchParams(location.search).get("api_base") || window.APP_CONFIG?.API_BASE || "";
 const WEBAPP_AUTH_TOKEN = new URLSearchParams(location.search).get("auth_token") || "";
@@ -248,6 +254,7 @@ async function loadBootstrap() {
 
   if (!state.bootstrap.onboarding_completed) {
     el("onboardingOverlay").classList.remove("hidden");
+    resetOnboardingStepper();
   } else {
     el("onboardingOverlay").classList.add("hidden");
   }
@@ -293,7 +300,71 @@ function setupOnboardingOptions() {
   fill();
 }
 
+function showOnboardingStep(index) {
+  const steps = onboardingState.steps;
+  if (!steps.length) return;
+
+  onboardingState.current = Math.max(0, Math.min(index, steps.length - 1));
+
+  steps.forEach((step, i) => {
+    step.classList.toggle("hidden", i !== onboardingState.current);
+  });
+
+  el("obProgress").textContent = `Вопрос ${onboardingState.current + 1} из ${steps.length}`;
+  el("obPrevBtn").classList.toggle("hidden", onboardingState.current === 0);
+  el("obNextBtn").classList.toggle("hidden", onboardingState.current === steps.length - 1);
+  el("obSubmitBtn").classList.toggle("hidden", onboardingState.current !== steps.length - 1);
+}
+
+function validateOnboardingStep(index) {
+  const step = onboardingState.steps[index];
+  if (!step) return true;
+
+  const fields = step.querySelectorAll("input, textarea, select");
+  for (const field of fields) {
+    if (field.id === "obCategoryOther" && field.classList.contains("hidden")) {
+      continue;
+    }
+    if (!field.checkValidity()) {
+      field.reportValidity();
+      return false;
+    }
+  }
+
+  const categoryValue = el("obCategory")?.value;
+  if (categoryValue === "Другое" && !el("obCategoryOther").value.trim()) {
+    el("obCategoryOther").reportValidity();
+    alert("Укажите вариант в поле «Другое»");
+    return false;
+  }
+
+  return true;
+}
+
+function initOnboardingStepper() {
+  if (onboardingState.initialized) return;
+
+  onboardingState.steps = Array.from(document.querySelectorAll("#onboardingForm .ob-step"));
+  onboardingState.initialized = true;
+
+  el("obPrevBtn").onclick = () => showOnboardingStep(onboardingState.current - 1);
+  el("obNextBtn").onclick = () => {
+    if (!validateOnboardingStep(onboardingState.current)) return;
+    showOnboardingStep(onboardingState.current + 1);
+  };
+
+  showOnboardingStep(0);
+}
+
+function resetOnboardingStepper() {
+  if (!onboardingState.initialized) return;
+  showOnboardingStep(0);
+}
+
 function setupEvents() {
+  if (eventsBound) return;
+  eventsBound = true;
+
   document.querySelectorAll(".bottom-nav button").forEach((btn) => {
     btn.onclick = () => showTab(btn.dataset.tab);
   });
@@ -446,6 +517,7 @@ async function initData() {
   el("obReminder").value = "09:00";
 
   setupOnboardingOptions();
+  initOnboardingStepper();
   setupEvents();
 
   // If backend is not configured yet, still show onboarding UI instead of empty main screen.
