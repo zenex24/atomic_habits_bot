@@ -1,23 +1,24 @@
-const tabs = [
-  { key: "home", label: "Главная" },
-  { key: "chat", label: "Чат" },
-  { key: "plan", label: "План" },
-  { key: "challenges", label: "Челленджи" },
-  { key: "profile", label: "Профиль" },
-];
+const TABS = [
+  { id: 'home', label: 'Home' },
+  { id: 'chat', label: 'Chat' },
+  { id: 'plan', label: 'Plan' },
+  { id: 'challenges', label: 'Challenges' },
+  { id: 'profile', label: 'Profile' },
+]
 
-export default function TabBar({ activeTab, setActiveTab }) {
+export function TabBar({ activeTab, onChange }) {
   return (
     <nav className="tabbar">
-      {tabs.map((tab) => (
+      {TABS.map((tab) => (
         <button
-          key={tab.key}
-          className={`tabbar-item ${activeTab === tab.key ? "active" : ""}`}
-          onClick={() => setActiveTab(tab.key)}
+          key={tab.id}
+          className={activeTab === tab.id ? 'tab-item active' : 'tab-item'}
+          onClick={() => onChange(tab.id)}
+          type="button"
         >
           {tab.label}
         </button>
       ))}
     </nav>
-  );
+  )
 }
