@@ -67,32 +67,23 @@
     </section>
 
     <section id="tab-profile" class="tab">
-      <div class="card">
-        <h3>Профиль</h3>
-        <div class="profile-overview">
-          <p><strong>Имя:</strong> <span id="profileSummaryName">-</span></p>
-          <p><strong>Цель:</strong> <span id="profileSummaryGoal">-</span></p>
-          <p><strong>Привычка:</strong> <span id="profileSummaryHabit">-</span></p>
+      <div class="card profile-minimal">
+        <p class="profile-kicker">Профиль</p>
+        <h3>Ваш фокус</h3>
+        <div class="profile-grid">
+          <article class="profile-item">
+            <p class="profile-label">Имя</p>
+            <p id="profileSummaryName" class="profile-value">-</p>
+          </article>
+          <article class="profile-item">
+            <p class="profile-label">Цель</p>
+            <p id="profileSummaryGoal" class="profile-value">-</p>
+          </article>
+          <article class="profile-item">
+            <p class="profile-label">Привычка</p>
+            <p id="profileSummaryHabit" class="profile-value">-</p>
+          </article>
         </div>
-        <form id="profileForm" class="stack">
-          <input id="profileName" type="text" placeholder="Имя" maxlength="128" />
-          <select id="profileTone">
-            <option value="friendly">Дружелюбный</option>
-            <option value="neutral">Нейтральный</option>
-            <option value="strict">Строгий</option>
-          </select>
-          <input id="profileReminder" type="time" />
-          <input id="profileTimezone" type="text" placeholder="Europe/Moscow" maxlength="64" />
-          <textarea id="profileDetails" placeholder="Описание привычки" maxlength="2000"></textarea>
-          <button class="primary" type="submit">Сохранить</button>
-        </form>
-        <button id="profileReconfigureBtn" class="danger profile-reconfigure-btn" type="button">
-          Перенастроить цель и привычку (сброс прогресса)
-        </button>
-      </div>
-      <div class="card">
-        <h3>Статистика</h3>
-        <p id="profileStats" class="muted"></p>
       </div>
     </section>
   </main>
@@ -174,6 +165,6 @@
   </div>
 
   <script src="./assets/config.js?v=11"></script>
-  <script src="./assets/app.js?v=14"></script>
+  <script src="./assets/app.js?v=15"></script>
 </body>
 </html>

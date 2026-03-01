@@ -123,21 +123,49 @@ body {
   flex-wrap: wrap;
 }
 
-.profile-overview {
-  background: #fff8d3;
-  border: 1px solid #f2de8f;
-  border-radius: 12px;
-  padding: 10px 12px;
-  margin-bottom: 10px;
+.profile-minimal {
+  background: linear-gradient(145deg, #101010 0%, #171717 52%, #111111 100%);
+  color: #f3f3f3;
+  border: 1px solid rgba(255, 212, 0, 0.38);
 }
 
-.profile-overview p {
-  margin: 4px 0;
+.profile-kicker {
+  margin: 0 0 6px;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 212, 0, 0.9);
 }
 
-.profile-reconfigure-btn {
-  width: 100%;
-  margin-top: 8px;
+.profile-minimal h3 {
+  margin: 0 0 12px;
+  font-size: 1.35rem;
+  color: #ffffff;
+}
+
+.profile-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.profile-item {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.profile-label {
+  margin: 0 0 6px;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.profile-value {
+  margin: 0;
+  font-size: 1.06rem;
+  font-weight: 700;
+  color: #ffd400;
 }
 
 button,

@@ -226,14 +226,6 @@ function renderProfile() {
   el("profileSummaryName").textContent = p.display_name || "Не указано";
   el("profileSummaryGoal").textContent = goalText;
   el("profileSummaryHabit").textContent = p.habit_name || "Не указана";
-
-  el("profileName").value = p.display_name || "";
-  el("profileTone").value = p.mentor_tone || "neutral";
-  el("profileReminder").value = p.reminder_time || "09:00";
-  el("profileTimezone").value = p.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-  el("profileDetails").value = p.habit_details || "";
-
-  el("profileStats").textContent = `Текущая серия: ${p.streak_days || 0} · Лучший стрик: ${p.best_streak || 0}`;
 }
 
 function addChatMessage(role, text) {
@@ -472,28 +464,34 @@ function setupEvents() {
     }
   };
 
-  el("profileForm").onsubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await api("/api/profile", {
-        method: "PATCH",
-        body: JSON.stringify({
-          display_name: el("profileName").value.trim(),
-          mentor_tone: el("profileTone").value,
-          reminder_time: el("profileReminder").value,
-          timezone: el("profileTimezone").value.trim(),
-          habit_details: el("profileDetails").value.trim()
-        })
-      });
-      await loadProfile();
-      await loadBootstrap();
-      alert("Профиль обновлен");
-    } catch (err) {
-      alert(err.message);
-    }
-  };
+  const profileForm = el("profileForm");
+  if (profileForm) {
+    profileForm.onsubmit = async (e) => {
+      e.preventDefault();
+      try {
+        await api("/api/profile", {
+          method: "PATCH",
+          body: JSON.stringify({
+            display_name: el("profileName").value.trim(),
+            mentor_tone: el("profileTone").value,
+            reminder_time: el("profileReminder").value,
+            timezone: el("profileTimezone").value.trim(),
+            habit_details: el("profileDetails").value.trim()
+          })
+        });
+        await loadProfile();
+        await loadBootstrap();
+        alert("Профиль обновлен");
+      } catch (err) {
+        alert(err.message);
+      }
+    };
+  }
 
-  el("profileReconfigureBtn").onclick = openOnboardingForReconfigure;
+  const reconfigureBtn = el("profileReconfigureBtn");
+  if (reconfigureBtn) {
+    reconfigureBtn.onclick = openOnboardingForReconfigure;
+  }
 
   el("onboardingForm").onsubmit = async (e) => {
     e.preventDefault();
