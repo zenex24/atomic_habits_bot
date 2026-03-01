@@ -328,6 +328,16 @@ textarea {
   min-width: 110px;
 }
 
+.ob-nav .ghost {
+  background: #ffffff;
+  color: #111111;
+  border: 1px solid #d5d5d5;
+}
+
+.ob-nav .ghost:hover {
+  background: #f5f5f5;
+}
+
 .checkbox-wrap {
   display: flex;
   gap: 8px;
