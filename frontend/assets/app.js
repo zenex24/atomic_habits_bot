@@ -1,4 +1,8 @@
-﻿const tg = window.Telegram?.WebApp;
+﻿function getTelegramWebApp() {
+  return window.Telegram?.WebApp;
+}
+
+const tg = getTelegramWebApp();
 if (tg) {
   tg.ready();
   tg.expand();
@@ -13,7 +17,6 @@ const state = {
 };
 
 const API_BASE = new URLSearchParams(location.search).get("api_base") || window.APP_CONFIG?.API_BASE || "";
-const INIT_DATA = tg?.initData || "";
 const TEST_USER_ID = new URLSearchParams(location.search).get("test_user_id");
 
 const GOOD_OPTIONS = ["Сон", "Правильное питание", "Спорт", "Другое"];
@@ -28,8 +31,9 @@ async function api(path, options = {}) {
     ...(options.headers || {})
   };
 
-  if (INIT_DATA) {
-    headers["X-Telegram-Init-Data"] = INIT_DATA;
+  const initData = getTelegramWebApp()?.initData || "";
+  if (initData) {
+    headers["X-Telegram-Init-Data"] = initData;
   }
   if (TEST_USER_ID) {
     headers["X-Test-User-Id"] = TEST_USER_ID;
@@ -413,8 +417,9 @@ function escapeHtml(value) {
 }
 
 async function initData() {
-  if (!INIT_DATA && !TEST_USER_ID) {
-    alert("Откройте mini app через Telegram, чтобы пройти авторизацию.");
+  const initData = getTelegramWebApp()?.initData || "";
+  if (!initData && !TEST_USER_ID) {
+    alert("Telegram не передал initData. Откройте mini app через кнопку /start в самом боте.");
   }
 
   el("obTimezone").value = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
@@ -433,3 +438,5 @@ async function initData() {
 }
 
 initData();
+
+
