@@ -17,6 +17,7 @@ const state = {
 };
 
 const API_BASE = new URLSearchParams(location.search).get("api_base") || window.APP_CONFIG?.API_BASE || "";
+const WEBAPP_AUTH_TOKEN = new URLSearchParams(location.search).get("auth_token") || "";
 const TEST_USER_ID = new URLSearchParams(location.search).get("test_user_id");
 
 const GOOD_OPTIONS = ["Сон", "Правильное питание", "Спорт", "Другое"];
@@ -46,6 +47,9 @@ async function api(path, options = {}) {
   const initData = getTelegramWebApp()?.initData || "";
   if (initData) {
     headers["X-Telegram-Init-Data"] = initData;
+  }
+  if (WEBAPP_AUTH_TOKEN) {
+    headers["X-WebApp-Auth-Token"] = WEBAPP_AUTH_TOKEN;
   }
   if (TEST_USER_ID) {
     headers["X-Test-User-Id"] = TEST_USER_ID;
@@ -430,7 +434,7 @@ function escapeHtml(value) {
 
 async function initData() {
   const initData = await waitForInitData();
-  if (!initData && !TEST_USER_ID) {
+  if (!initData && !WEBAPP_AUTH_TOKEN && !TEST_USER_ID) {
     const platform = getTelegramWebApp()?.platform || "unknown";
     alert(
       `Telegram не передал initData (platform: ${platform}). ` +
