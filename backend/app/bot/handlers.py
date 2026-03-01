@@ -48,7 +48,11 @@ async def cmd_start(message: Message) -> None:
     )
 
     await message.answer(
-        "Добро пожаловать. Откройте mini app кнопкой ниже.",
+        (
+            "Добро пожаловать. Откройте mini app кнопкой ниже.\n\n"
+            "Если Telegram снова не передаст initData, откройте эту же ссылку:\n"
+            f"{webapp_url}"
+        ),
         reply_markup=inline_keyboard,
     )
 

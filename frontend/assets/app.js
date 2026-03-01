@@ -438,7 +438,7 @@ async function initData() {
     const platform = getTelegramWebApp()?.platform || "unknown";
     alert(
       `Telegram не передал initData (platform: ${platform}). ` +
-      "Откройте mini app через кнопку /start в официальном Telegram и обновите приложение."
+      "Откройте mini app заново через /start. Нужна ссылка, где есть параметр auth_token=..."
     );
   }
 
