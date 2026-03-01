@@ -27,7 +27,7 @@ function el(id) {
   return document.getElementById(id);
 }
 
-async function waitForInitData(timeoutMs = 2500, intervalMs = 100) {
+async function waitForInitData(timeoutMs = 350, intervalMs = 50) {
   const started = Date.now();
   while (Date.now() - started < timeoutMs) {
     const value = getTelegramWebApp()?.initData || "";
@@ -433,7 +433,7 @@ function escapeHtml(value) {
 }
 
 async function initData() {
-  const initData = await waitForInitData();
+  const initData = WEBAPP_AUTH_TOKEN ? "" : await waitForInitData();
   if (!initData && !WEBAPP_AUTH_TOKEN && !TEST_USER_ID) {
     const platform = getTelegramWebApp()?.platform || "unknown";
     alert(
