@@ -127,10 +127,17 @@
 
         <div class="ob-step hidden">
           <label>Что хотите сделать?</label>
-          <select id="obGoal" required>
-            <option value="build">Привить хорошую привычку</option>
-            <option value="break">Убрать плохую привычку</option>
-          </select>
+          <div class="goal-picker" role="group" aria-label="Выбор цели">
+            <button type="button" class="goal-choice active" data-goal="build">
+              <span class="goal-choice-title">Привить</span>
+              <span class="goal-choice-sub">Хочу добавить полезную привычку</span>
+            </button>
+            <button type="button" class="goal-choice" data-goal="break">
+              <span class="goal-choice-title">Убрать</span>
+              <span class="goal-choice-sub">Хочу избавиться от вредной привычки</span>
+            </button>
+          </div>
+          <input id="obGoal" type="hidden" value="build" />
         </div>
 
         <div class="ob-step hidden">
@@ -178,6 +185,6 @@
   </div>
 
   <script src="./assets/config.js?v=11"></script>
-  <script src="./assets/app.js?v=17"></script>
+  <script src="./assets/app.js?v=18"></script>
 </body>
 </html>

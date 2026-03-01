@@ -308,6 +308,22 @@ function updateGoalDependentTexts() {
     : "Что улучшится, когда вы избавитесь от этой привычки";
 }
 
+function setGoalSelection(goalType) {
+  const value = goalType === "break" ? "break" : "build";
+  el("obGoal").value = value;
+  document.querySelectorAll(".goal-choice").forEach((button) => {
+    button.classList.toggle("active", button.dataset.goal === value);
+  });
+  updateGoalDependentTexts();
+}
+
+function initGoalPicker() {
+  document.querySelectorAll(".goal-choice").forEach((button) => {
+    button.onclick = () => setGoalSelection(button.dataset.goal);
+  });
+  setGoalSelection(el("obGoal").value || "build");
+}
+
 function setOnboardingMode(mode) {
   onboardingState.mode = mode === "reconfigure" ? "reconfigure" : "initial";
 
@@ -320,8 +336,8 @@ function setOnboardingMode(mode) {
 
   if (onboardingState.mode === "reconfigure") {
     overlayEl.classList.add("is-reconfigure");
-    badgeEl.textContent = "Редактирование профиля";
-    titleEl.textContent = "Изменение профиля";
+    badgeEl.textContent = "Обновление фокуса";
+    titleEl.textContent = "Измените цель и привычку";
     subtitleEl.textContent = "Измените ответы. После подтверждения прогресс, план, чат и челленджи будут сброшены.";
     submitBtn.textContent = "Подтвердить изменения";
     return;
@@ -338,8 +354,7 @@ function fillOnboardingFromProfile(profile) {
   if (!profile) return;
 
   el("obName").value = profile.display_name || state.bootstrap?.user?.display_name || "";
-  el("obGoal").value = profile.goal_type || "build";
-  updateGoalDependentTexts();
+  setGoalSelection(profile.goal_type || "build");
 
   el("obHabitName").value = profile.habit_name || "";
   el("obHabitDetails").value = profile.habit_details || "";
@@ -384,6 +399,14 @@ function validateOnboardingStep(index) {
     }
   }
 
+  if (index === 1) {
+    const goal = el("obGoal").value;
+    if (goal !== "build" && goal !== "break") {
+      alert("Выберите цель: привить или убрать привычку.");
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -422,8 +445,6 @@ function openOnboardingForReconfigure() {
 function setupEvents() {
   if (eventsBound) return;
   eventsBound = true;
-
-  el("obGoal").onchange = updateGoalDependentTexts;
 
   document.querySelectorAll(".bottom-nav button").forEach((btn) => {
     btn.onclick = () => showTab(btn.dataset.tab);
@@ -592,7 +613,7 @@ async function initData() {
   el("obReminder").value = "09:00";
   el("obTone").value = "neutral";
 
-  updateGoalDependentTexts();
+  initGoalPicker();
   setOnboardingMode("initial");
   initOnboardingStepper();
   setupEvents();

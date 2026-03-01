@@ -476,6 +476,48 @@ textarea {
   font-size: 0.95rem;
 }
 
+.goal-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.goal-choice {
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+  border-radius: 14px;
+  padding: 12px;
+  color: #f0f0f0;
+  transition: transform 140ms ease, border-color 140ms ease, background 140ms ease;
+}
+
+.goal-choice:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 212, 0, 0.5);
+}
+
+.goal-choice.active {
+  border-color: rgba(255, 212, 0, 0.75);
+  background: linear-gradient(180deg, rgba(255, 212, 0, 0.26), rgba(255, 212, 0, 0.1));
+  box-shadow: inset 0 0 0 1px rgba(255, 212, 0, 0.28);
+}
+
+.goal-choice-title {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.goal-choice-sub {
+  display: block;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.78);
+}
+
 .onboarding-modal input,
 .onboarding-modal textarea,
 .onboarding-modal select {
@@ -550,5 +592,9 @@ textarea {
   .ob-nav button {
     min-width: 0;
     flex: 1;
+  }
+
+  .goal-picker {
+    grid-template-columns: 1fr;
   }
 }
