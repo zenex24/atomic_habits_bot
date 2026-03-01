@@ -448,12 +448,21 @@ async function initData() {
   setupOnboardingOptions();
   setupEvents();
 
+  // If backend is not configured yet, still show onboarding UI instead of empty main screen.
+  if (!API_BASE) {
+    el("onboardingOverlay").classList.remove("hidden");
+  }
+
   try {
     await loadBootstrap();
     await Promise.all([loadPlan(), loadChallenges(), loadProfile()]);
     renderChat();
   } catch (err) {
-    alert(`Ошибка загрузки: ${err.message}`);
+    el("onboardingOverlay").classList.remove("hidden");
+    const backendHint = !API_BASE
+      ? "Не задан API_BASE в frontend/assets/config.js. Укажите публичный HTTPS URL backend."
+      : "Проверьте доступность backend API и CORS.";
+    alert(`Ошибка загрузки: ${err.message}. ${backendHint}`);
   }
 }
 
