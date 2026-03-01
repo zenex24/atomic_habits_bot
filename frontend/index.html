@@ -125,48 +125,23 @@
         </div>
 
         <div class="ob-step hidden">
-          <label>Категория привычки</label>
-          <select id="obCategory" required></select>
-          <input id="obCategoryOther" type="text" placeholder="Другое (уточните)" class="hidden" maxlength="64" />
-        </div>
-
-        <div class="ob-step hidden">
-          <label>Название привычки</label>
+          <label id="obHabitNameLabel">Какую привычку хотите привить?</label>
           <input id="obHabitName" type="text" placeholder="Например: Ложиться спать до 23:00" maxlength="128" required />
         </div>
 
         <div class="ob-step hidden">
-          <label>Подробнее опишите привычку</label>
+          <label id="obHabitDetailsLabel">Подробнее опишите привычку</label>
           <textarea id="obHabitDetails" placeholder="Что именно хотите изменить" maxlength="2000" required></textarea>
         </div>
 
         <div class="ob-step hidden">
-          <label>Почему это важно для вас?</label>
+          <label id="obBaselineLabel">Как часто хотите делать эту привычку?</label>
+          <input id="obBaseline" type="text" placeholder="Например: каждый день" maxlength="128" required />
+        </div>
+
+        <div class="ob-step hidden">
+          <label id="obMotivationLabel">Почему это важно для вас?</label>
           <textarea id="obMotivation" placeholder="Что это даст в вашей жизни" maxlength="2000" required></textarea>
-        </div>
-
-        <div class="ob-step hidden">
-          <label>Текущая частота</label>
-          <input id="obBaseline" type="text" placeholder="Например: 3 раза в неделю" maxlength="128" required />
-        </div>
-
-        <div class="ob-step hidden">
-          <label>Тон наставника</label>
-          <select id="obTone" required>
-            <option value="friendly">Дружелюбный</option>
-            <option value="neutral">Нейтральный</option>
-            <option value="strict">Строгий</option>
-          </select>
-        </div>
-
-        <div class="ob-step hidden">
-          <label>Ежедневное напоминание</label>
-          <input id="obReminder" type="time" required />
-        </div>
-
-        <div class="ob-step hidden">
-          <label>Часовой пояс</label>
-          <input id="obTimezone" type="text" placeholder="Europe/Moscow" maxlength="64" required />
         </div>
 
         <div class="ob-step hidden">
@@ -175,6 +150,14 @@
             <span>Согласен(на) с обработкой данных и политикой конфиденциальности</span>
           </label>
         </div>
+
+        <select id="obTone" class="hidden" aria-hidden="true">
+          <option value="friendly">Дружелюбный</option>
+          <option value="neutral" selected>Нейтральный</option>
+          <option value="strict">Строгий</option>
+        </select>
+        <input id="obReminder" type="time" class="hidden" aria-hidden="true" />
+        <input id="obTimezone" type="text" class="hidden" aria-hidden="true" maxlength="64" />
 
         <div class="ob-nav">
           <button id="obPrevBtn" class="ghost" type="button">← Назад</button>
@@ -186,6 +169,6 @@
   </div>
 
   <script src="./assets/config.js?v=11"></script>
-  <script src="./assets/app.js?v=12"></script>
+  <script src="./assets/app.js?v=13"></script>
 </body>
 </html>

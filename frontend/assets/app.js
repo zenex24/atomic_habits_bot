@@ -27,9 +27,6 @@ const API_BASE = new URLSearchParams(location.search).get("api_base") || window.
 const WEBAPP_AUTH_TOKEN = new URLSearchParams(location.search).get("auth_token") || "";
 const TEST_USER_ID = new URLSearchParams(location.search).get("test_user_id");
 
-const GOOD_OPTIONS = ["Сон", "Правильное питание", "Спорт", "Другое"];
-const BAD_OPTIONS = ["Курение", "Алкоголь", "Дрочка", "Дешевый дофамин", "Другое"];
-
 function el(id) {
   return document.getElementById(id);
 }
@@ -277,29 +274,36 @@ async function loadProfile() {
   renderProfile();
 }
 
-function setupOnboardingOptions() {
-  const goalEl = el("obGoal");
-  const categoryEl = el("obCategory");
-  const otherEl = el("obCategoryOther");
+function updateGoalDependentTexts() {
+  const isBuild = el("obGoal").value === "build";
 
-  function fill() {
-    const options = goalEl.value === "build" ? GOOD_OPTIONS : BAD_OPTIONS;
-    categoryEl.innerHTML = "";
-    options.forEach((label) => {
-      const option = document.createElement("option");
-      option.value = label;
-      option.textContent = label;
-      categoryEl.appendChild(option);
-    });
+  el("obHabitNameLabel").textContent = isBuild
+    ? "Какую привычку хотите привить?"
+    : "Какую привычку хотите убрать?";
+  el("obHabitName").placeholder = isBuild
+    ? "Например: читать 10 минут перед сном"
+    : "Например: курение";
 
-    otherEl.classList.toggle("hidden", categoryEl.value !== "Другое");
-  }
+  el("obHabitDetailsLabel").textContent = isBuild
+    ? "Подробнее опишите привычку"
+    : "Подробнее опишите, как проявляется эта привычка";
+  el("obHabitDetails").placeholder = isBuild
+    ? "Что именно хотите добавить в жизнь"
+    : "В каких ситуациях это чаще происходит";
 
-  goalEl.onchange = fill;
-  categoryEl.onchange = () => {
-    otherEl.classList.toggle("hidden", categoryEl.value !== "Другое");
-  };
-  fill();
+  el("obBaselineLabel").textContent = isBuild
+    ? "Как часто хотите делать эту привычку?"
+    : "Как часто происходит эта привычка?";
+  el("obBaseline").placeholder = isBuild
+    ? "Например: каждый день"
+    : "Например: 3 раза в день";
+
+  el("obMotivationLabel").textContent = isBuild
+    ? "Почему это важно для вас?"
+    : "Почему важно убрать эту привычку?";
+  el("obMotivation").placeholder = isBuild
+    ? "Что это даст в вашей жизни"
+    : "Что улучшится, когда вы избавитесь от этой привычки";
 }
 
 function setOnboardingMode(mode) {
@@ -327,26 +331,7 @@ function fillOnboardingFromProfile(profile) {
 
   el("obName").value = profile.display_name || state.bootstrap?.user?.display_name || "";
   el("obGoal").value = profile.goal_type || "build";
-  setupOnboardingOptions();
-
-  const categoryEl = el("obCategory");
-  const otherEl = el("obCategoryOther");
-  const availableCategories = Array.from(categoryEl.options).map((option) => option.value);
-  const category = profile.habit_category || "";
-
-  if (category && availableCategories.includes(category) && category !== "Другое") {
-    categoryEl.value = category;
-    otherEl.value = "";
-    otherEl.classList.add("hidden");
-  } else if (category) {
-    categoryEl.value = "Другое";
-    otherEl.value = category;
-    otherEl.classList.remove("hidden");
-  } else {
-    categoryEl.value = availableCategories[0] || "Другое";
-    otherEl.value = "";
-    otherEl.classList.toggle("hidden", categoryEl.value !== "Другое");
-  }
+  updateGoalDependentTexts();
 
   el("obHabitName").value = profile.habit_name || "";
   el("obHabitDetails").value = profile.habit_details || "";
@@ -380,20 +365,10 @@ function validateOnboardingStep(index) {
 
   const fields = step.querySelectorAll("input, textarea, select");
   for (const field of fields) {
-    if (field.id === "obCategoryOther" && field.classList.contains("hidden")) {
-      continue;
-    }
     if (!field.checkValidity()) {
       field.reportValidity();
       return false;
     }
-  }
-
-  const categoryValue = el("obCategory")?.value;
-  if (categoryValue === "Другое" && !el("obCategoryOther").value.trim()) {
-    el("obCategoryOther").reportValidity();
-    alert("Укажите вариант в поле «Другое»");
-    return false;
   }
 
   return true;
@@ -434,6 +409,8 @@ function openOnboardingForReconfigure() {
 function setupEvents() {
   if (eventsBound) return;
   eventsBound = true;
+
+  el("obGoal").onchange = updateGoalDependentTexts;
 
   document.querySelectorAll(".bottom-nav button").forEach((btn) => {
     btn.onclick = () => showTab(btn.dataset.tab);
@@ -511,13 +488,8 @@ function setupEvents() {
   el("onboardingForm").onsubmit = async (e) => {
     e.preventDefault();
 
-    const categoryValue = el("obCategory").value;
-    const habitCategory = categoryValue === "Другое" ? el("obCategoryOther").value.trim() : categoryValue;
-
-    if (!habitCategory) {
-      alert("Укажите категорию");
-      return;
-    }
+    const goalType = el("obGoal").value;
+    const habitCategory = goalType === "build" ? "Полезная привычка" : "Вредная привычка";
 
     const isReconfigure = onboardingState.mode === "reconfigure";
     if (isReconfigure) {
@@ -532,15 +504,15 @@ function setupEvents() {
         method: "POST",
         body: JSON.stringify({
           display_name: el("obName").value.trim(),
-          goal_type: el("obGoal").value,
+          goal_type: goalType,
           habit_category: habitCategory,
           habit_name: el("obHabitName").value.trim(),
           habit_details: el("obHabitDetails").value.trim(),
           motivation: el("obMotivation").value.trim(),
           baseline_frequency: el("obBaseline").value.trim(),
-          mentor_tone: el("obTone").value,
-          reminder_time: el("obReminder").value,
-          timezone: el("obTimezone").value.trim(),
+          mentor_tone: el("obTone").value || "neutral",
+          reminder_time: el("obReminder").value || "09:00",
+          timezone: el("obTimezone").value.trim() || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
           privacy_accepted: el("obPrivacy").checked
         })
       });
@@ -599,8 +571,9 @@ async function initData() {
 
   el("obTimezone").value = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
   el("obReminder").value = "09:00";
+  el("obTone").value = "neutral";
 
-  setupOnboardingOptions();
+  updateGoalDependentTexts();
   setOnboardingMode("initial");
   initOnboardingStepper();
   setupEvents();
