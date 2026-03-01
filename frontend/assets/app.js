@@ -26,6 +26,18 @@ function el(id) {
   return document.getElementById(id);
 }
 
+async function waitForInitData(timeoutMs = 2500, intervalMs = 100) {
+  const started = Date.now();
+  while (Date.now() - started < timeoutMs) {
+    const value = getTelegramWebApp()?.initData || "";
+    if (value) {
+      return value;
+    }
+    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+  }
+  return getTelegramWebApp()?.initData || "";
+}
+
 async function api(path, options = {}) {
   const headers = {
     ...(options.headers || {})
@@ -417,9 +429,13 @@ function escapeHtml(value) {
 }
 
 async function initData() {
-  const initData = getTelegramWebApp()?.initData || "";
+  const initData = await waitForInitData();
   if (!initData && !TEST_USER_ID) {
-    alert("Telegram не передал initData. Откройте mini app через кнопку /start в самом боте.");
+    const platform = getTelegramWebApp()?.platform || "unknown";
+    alert(
+      `Telegram не передал initData (platform: ${platform}). ` +
+      "Откройте mini app через кнопку /start в официальном Telegram и обновите приложение."
+    );
   }
 
   el("obTimezone").value = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
