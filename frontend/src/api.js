@@ -1,13 +1,49 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+const LOCAL_API_URL = 'http://localhost:8000'
 
-let accessToken = localStorage.getItem('atomic_access_token') || ''
+function resolveApiUrl() {
+  const envUrl = import.meta.env.VITE_API_URL?.trim()
+  if (envUrl) return envUrl
+
+  if (typeof window === 'undefined') return LOCAL_API_URL
+
+  const host = window.location.hostname
+  if (host === 'localhost' || host === '127.0.0.1') {
+    return LOCAL_API_URL
+  }
+
+  return ''
+}
+
+function safeStorageGet(key) {
+  try {
+    return window.localStorage.getItem(key) || ''
+  } catch {
+    return ''
+  }
+}
+
+function safeStorageSet(key, value) {
+  try {
+    window.localStorage.setItem(key, value)
+  } catch {
+    // no-op
+  }
+}
+
+const API_URL = resolveApiUrl()
+
+let accessToken = safeStorageGet('atomic_access_token')
 
 function setToken(token) {
   accessToken = token
-  localStorage.setItem('atomic_access_token', token)
+  safeStorageSet('atomic_access_token', token)
 }
 
 async function request(path, options = {}) {
+  if (!API_URL) {
+    throw new Error('Backend API URL is not configured. Set VITE_API_URL and redeploy frontend.')
+  }
+
   const headers = {
     'Content-Type': 'application/json',
     ...(options.headers || {}),
