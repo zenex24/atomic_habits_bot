@@ -217,6 +217,16 @@ function renderProfile() {
   const p = state.profile;
   if (!p) return;
 
+  const goalText = p.goal_type === "build"
+    ? "Привить привычку"
+    : p.goal_type === "break"
+      ? "Убрать привычку"
+      : "Не выбрана";
+
+  el("profileSummaryName").textContent = p.display_name || "Не указано";
+  el("profileSummaryGoal").textContent = goalText;
+  el("profileSummaryHabit").textContent = p.habit_name || "Не указана";
+
   el("profileName").value = p.display_name || "";
   el("profileTone").value = p.mentor_tone || "neutral";
   el("profileReminder").value = p.reminder_time || "09:00";

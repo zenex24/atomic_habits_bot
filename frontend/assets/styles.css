@@ -123,6 +123,18 @@ body {
   flex-wrap: wrap;
 }
 
+.profile-overview {
+  background: #fff8d3;
+  border: 1px solid #f2de8f;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+
+.profile-overview p {
+  margin: 4px 0;
+}
+
 .profile-reconfigure-btn {
   width: 100%;
   margin-top: 8px;
