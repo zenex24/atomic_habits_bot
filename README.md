@@ -59,3 +59,4 @@ python run.py
 ## Быстрый deploy backend на Render
 - Инструкция: `DEPLOY_RENDER.md`
 - Конфиг Blueprint: `render.yaml`
+- Важный env для автосборки ссылки mini app: `PUBLIC_API_BASE=https://<your-render-url>`

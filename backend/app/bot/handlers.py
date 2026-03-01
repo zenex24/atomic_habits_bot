@@ -1,4 +1,5 @@
-﻿from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
+﻿import os
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from aiogram import F, Router
 from aiogram.filters import CommandStart
@@ -11,11 +12,17 @@ router = Router()
 
 
 def build_webapp_url(base_url: str, user_id: int) -> str:
+    settings = get_settings()
     token = generate_webapp_auth_token(user_id)
 
     parsed = urlparse(base_url)
     query_items = dict(parse_qsl(parsed.query, keep_blank_values=True))
     query_items["auth_token"] = token
+
+    if "api_base" not in query_items:
+        api_base = settings.public_api_base.strip() or os.getenv("RENDER_EXTERNAL_URL", "").strip()
+        if api_base:
+            query_items["api_base"] = api_base
 
     return urlunparse(
         (

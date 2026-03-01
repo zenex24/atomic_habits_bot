@@ -6,6 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     bot_token: str
     webapp_url: str = "http://localhost:8000"
+    public_api_base: str = ""
     openrouter_api_key: str
     openrouter_model: str = "openai/gpt-4o-mini"
     database_url: str = "sqlite+aiosqlite:///./atomic_habits.db"
