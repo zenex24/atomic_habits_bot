@@ -102,15 +102,23 @@
   </nav>
 
   <div id="onboardingOverlay" class="overlay hidden">
-    <div class="modal">
-      <h2 id="onboardingTitle">Первый запуск</h2>
-      <p id="onboardingSubtitle" class="muted">Ответьте на вопросы, чтобы настроить персональный трек привычки.</p>
-      <blockquote class="onboarding-quote">
-        Маленькие изменения часто кажутся незначительными, пока вы не пересечете критический порог.
-        Самые мощные результаты любого процесса происходят со временем.
-      </blockquote>
+    <div class="modal onboarding-modal">
+      <div class="onboarding-head">
+        <span id="onboardingModeBadge" class="onboarding-badge">Первичная настройка</span>
+        <h2 id="onboardingTitle">Первый запуск</h2>
+        <p id="onboardingSubtitle" class="muted onboarding-subtitle">Ответьте на вопросы, чтобы настроить персональный трек привычки.</p>
+        <blockquote class="onboarding-quote">
+          Маленькие изменения часто кажутся незначительными, пока вы не пересечете критический порог.
+          Самые мощные результаты любого процесса происходят со временем.
+        </blockquote>
+      </div>
       <form id="onboardingForm" class="stack">
-        <p id="obProgress" class="muted ob-progress"></p>
+        <div class="ob-progress-wrap">
+          <p id="obProgress" class="muted ob-progress"></p>
+          <div class="ob-progress-track">
+            <span id="obProgressBar"></span>
+          </div>
+        </div>
 
         <div class="ob-step">
           <label>Как вас зовут?</label>
@@ -170,6 +178,6 @@
   </div>
 
   <script src="./assets/config.js?v=11"></script>
-  <script src="./assets/app.js?v=16"></script>
+  <script src="./assets/app.js?v=17"></script>
 </body>
 </html>

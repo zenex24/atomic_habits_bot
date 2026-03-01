@@ -311,18 +311,24 @@ function updateGoalDependentTexts() {
 function setOnboardingMode(mode) {
   onboardingState.mode = mode === "reconfigure" ? "reconfigure" : "initial";
 
+  const overlayEl = el("onboardingOverlay");
   const titleEl = el("onboardingTitle");
   const subtitleEl = el("onboardingSubtitle");
+  const badgeEl = el("onboardingModeBadge");
   const submitBtn = el("obSubmitBtn");
-  if (!titleEl || !subtitleEl || !submitBtn) return;
+  if (!titleEl || !subtitleEl || !submitBtn || !badgeEl || !overlayEl) return;
 
   if (onboardingState.mode === "reconfigure") {
+    overlayEl.classList.add("is-reconfigure");
+    badgeEl.textContent = "Редактирование профиля";
     titleEl.textContent = "Изменение профиля";
     subtitleEl.textContent = "Измените ответы. После подтверждения прогресс, план, чат и челленджи будут сброшены.";
     submitBtn.textContent = "Подтвердить изменения";
     return;
   }
 
+  overlayEl.classList.remove("is-reconfigure");
+  badgeEl.textContent = "Первичная настройка";
   titleEl.textContent = "Первый запуск";
   subtitleEl.textContent = "Ответьте на вопросы, чтобы настроить персональный трек привычки.";
   submitBtn.textContent = "Завершить настройку";
@@ -355,7 +361,12 @@ function showOnboardingStep(index) {
     step.classList.toggle("hidden", i !== onboardingState.current);
   });
 
-  el("obProgress").textContent = `Вопрос ${onboardingState.current + 1} из ${steps.length}`;
+  el("obProgress").textContent = `Шаг ${onboardingState.current + 1} из ${steps.length}`;
+  const progressBar = el("obProgressBar");
+  if (progressBar) {
+    const pct = ((onboardingState.current + 1) / steps.length) * 100;
+    progressBar.style.width = `${pct}%`;
+  }
   el("obPrevBtn").classList.toggle("hidden", onboardingState.current === 0);
   el("obNextBtn").classList.toggle("hidden", onboardingState.current === steps.length - 1);
   el("obSubmitBtn").classList.toggle("hidden", onboardingState.current !== steps.length - 1);
