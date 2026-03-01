@@ -55,3 +55,7 @@ python run.py
 2. Поставьте Web App URL = URL GitHub Pages.
 3. В `.env` backend укажите:
 - `WEBAPP_URL=https://<username>.github.io/<repo>/`
+
+## Быстрый deploy backend на Render
+- Инструкция: `DEPLOY_RENDER.md`
+- Конфиг Blueprint: `render.yaml`

@@ -1,0 +1,34 @@
+﻿services:
+  - type: web
+    name: atomic-habits-backend
+    runtime: python
+    plan: free
+    autoDeploy: true
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --app-dir backend
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.11
+      - key: OPENROUTER_MODEL
+        value: openai/gpt-4o-mini
+      - key: DATABASE_URL
+        value: sqlite+aiosqlite:///./atomic_habits.db
+      - key: INIT_DATA_MAX_AGE_SECONDS
+        value: "86400"
+      - key: DAILY_CHAT_LIMIT
+        value: "40"
+      - key: DEFAULT_REMINDER_TIME
+        value: "09:00"
+      - key: ALLOW_TEST_AUTH
+        value: "false"
+      - key: TEST_USER_ID
+        value: "111111111"
+      - key: BOT_TOKEN
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: ADMIN_PANEL_TOKEN
+        sync: false
+      - key: WEBAPP_URL
+        sync: false
