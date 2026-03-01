@@ -1,0 +1,33 @@
+﻿<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atomic Habits Admin</title>
+  <link rel="stylesheet" href="./assets/styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="muted">Admin panel</p>
+        <h1>Метрики и пользователи</h1>
+      </div>
+      <button class="ghost" id="backBtn">Назад</button>
+    </header>
+
+    <section class="card">
+      <h3>Метрики</h3>
+      <div id="metricsBox" class="list"></div>
+    </section>
+
+    <section class="card">
+      <h3>Пользователи</h3>
+      <div id="usersBox" class="list"></div>
+    </section>
+  </main>
+
+  <script src="./assets/config.js"></script>
+  <script src="./assets/admin.js"></script>
+</body>
+</html>

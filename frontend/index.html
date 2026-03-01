@@ -1,0 +1,147 @@
+﻿<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atomic Habits Mini App</title>
+  <link rel="stylesheet" href="./assets/styles.css" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <div class="bg-shape shape-a"></div>
+  <div class="bg-shape shape-b"></div>
+
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="muted">Atomic Habits</p>
+        <h1 id="welcomeTitle">Добро пожаловать</h1>
+      </div>
+      <button id="openAdminBtn" class="ghost">Админка</button>
+    </header>
+
+    <section id="tab-home" class="tab active">
+      <div class="card hero">
+        <h2 id="habitTitle">Ваша привычка</h2>
+        <p id="goalTypeText" class="muted"></p>
+        <div class="stats-row">
+          <div><span id="streakDays">0</span><small>Серия</small></div>
+          <div><span id="bestStreak">0</span><small>Лучший стрик</small></div>
+          <div><span id="planProgress">0/0</span><small>План</small></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Ежедневный чек-ин</h3>
+        <p class="muted">Отметьте, что сегодня вы сделали шаг к цели.</p>
+        <div class="inline-actions">
+          <button id="checkinDoneBtn" class="primary">Да, выполнено</button>
+          <button id="checkinMissedBtn" class="danger">Пока нет</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-chat" class="tab">
+      <div id="chatBox" class="chat-box"></div>
+      <form id="chatForm" class="chat-form">
+        <input id="chatInput" type="text" placeholder="Напишите наставнику..." maxlength="3000" required />
+        <button class="primary" type="submit">Отправить</button>
+      </form>
+      <p id="chatLimit" class="muted"></p>
+    </section>
+
+    <section id="tab-plan" class="tab">
+      <div class="card">
+        <h3>План действий</h3>
+        <form id="planForm" class="stack">
+          <input id="planTitle" type="text" placeholder="Новый шаг плана" maxlength="200" required />
+          <textarea id="planDesc" placeholder="Краткое описание" maxlength="1000"></textarea>
+          <button class="primary" type="submit">Добавить</button>
+        </form>
+      </div>
+      <div id="planList" class="list"></div>
+    </section>
+
+    <section id="tab-challenges" class="tab">
+      <div id="challengeList" class="list"></div>
+    </section>
+
+    <section id="tab-profile" class="tab">
+      <div class="card">
+        <h3>Профиль</h3>
+        <form id="profileForm" class="stack">
+          <input id="profileName" type="text" placeholder="Имя" maxlength="128" />
+          <select id="profileTone">
+            <option value="friendly">Дружелюбный</option>
+            <option value="neutral">Нейтральный</option>
+            <option value="strict">Строгий</option>
+          </select>
+          <input id="profileReminder" type="time" />
+          <input id="profileTimezone" type="text" placeholder="Europe/Moscow" maxlength="64" />
+          <textarea id="profileDetails" placeholder="Описание привычки" maxlength="2000"></textarea>
+          <button class="primary" type="submit">Сохранить</button>
+        </form>
+      </div>
+      <div class="card">
+        <h3>Статистика</h3>
+        <p id="profileStats" class="muted"></p>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button data-tab="home" class="active">Главная</button>
+    <button data-tab="chat">Чат</button>
+    <button data-tab="plan">План</button>
+    <button data-tab="challenges">Челленджи</button>
+    <button data-tab="profile">Профиль</button>
+  </nav>
+
+  <div id="onboardingOverlay" class="overlay hidden">
+    <div class="modal">
+      <h2>Первый запуск</h2>
+      <p class="muted">Ответьте на вопросы, чтобы настроить персональный трек привычки.</p>
+      <form id="onboardingForm" class="stack">
+        <input id="obName" type="text" placeholder="Как вас зовут" maxlength="128" required />
+
+        <label>Что хотите сделать?</label>
+        <select id="obGoal" required>
+          <option value="build">Привить хорошую привычку</option>
+          <option value="break">Убрать плохую привычку</option>
+        </select>
+
+        <label>Категория</label>
+        <select id="obCategory" required></select>
+        <input id="obCategoryOther" type="text" placeholder="Другое (уточните)" class="hidden" maxlength="64" />
+
+        <input id="obHabitName" type="text" placeholder="Название привычки" maxlength="128" required />
+        <textarea id="obHabitDetails" placeholder="Подробнее опишите привычку" maxlength="2000" required></textarea>
+        <textarea id="obMotivation" placeholder="Почему это важно для вас" maxlength="2000" required></textarea>
+        <input id="obBaseline" type="text" placeholder="Текущая частота (например: 3 раза в неделю)" maxlength="128" required />
+
+        <label>Тон наставника</label>
+        <select id="obTone" required>
+          <option value="friendly">Дружелюбный</option>
+          <option value="neutral">Нейтральный</option>
+          <option value="strict">Строгий</option>
+        </select>
+
+        <label>Ежедневное напоминание</label>
+        <input id="obReminder" type="time" required />
+
+        <input id="obTimezone" type="text" placeholder="Europe/Moscow" maxlength="64" required />
+
+        <label class="checkbox-wrap">
+          <input id="obPrivacy" type="checkbox" required />
+          <span>Согласен(на) с обработкой данных и политикой конфиденциальности</span>
+        </label>
+
+        <button class="primary" type="submit">Сохранить и начать</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="./assets/config.js"></script>
+  <script src="./assets/app.js"></script>
+</body>
+</html>
