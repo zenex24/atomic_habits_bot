@@ -3,10 +3,12 @@
 import asyncio
 from contextlib import asynccontextmanager, suppress
 from pathlib import Path
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from aiogram.types import BotCommand, MenuButtonWebApp, WebAppInfo
 
 from app.api.routes import router as api_router
 from app.bot.instance import bot, dp
@@ -19,12 +21,55 @@ from app.services.reminders import start_scheduler, stop_scheduler
 polling_task: asyncio.Task | None = None
 
 
+def _menu_webapp_url() -> str:
+    base_url = settings.webapp_url.strip()
+    if not base_url:
+        return ""
+
+    parsed = urlparse(base_url)
+    query = dict(parse_qsl(parsed.query, keep_blank_values=True))
+    query.pop("auth_token", None)
+    if settings.public_api_base.strip() and "api_base" not in query:
+        query["api_base"] = settings.public_api_base.strip()
+
+    return urlunparse(
+        (
+            parsed.scheme,
+            parsed.netloc,
+            parsed.path,
+            parsed.params,
+            urlencode(query),
+            parsed.fragment,
+        )
+    )
+
+
+async def _configure_bot_ui() -> None:
+    await bot.set_my_commands(
+        [
+            BotCommand(command="start", description="Открыть mini app"),
+            BotCommand(command="help", description="Помощь"),
+        ]
+    )
+
+    menu_url = _menu_webapp_url()
+    if menu_url:
+        await bot.set_chat_menu_button(
+            menu_button=MenuButtonWebApp(
+                text="Mini App",
+                web_app=WebAppInfo(url=menu_url),
+            )
+        )
+        print(f"[startup] Menu button URL set to: {menu_url}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global polling_task
 
     register_handlers()
     await init_db()
+    await _configure_bot_ui()
 
     async with SessionLocal() as session:
         await seed_challenges(session)

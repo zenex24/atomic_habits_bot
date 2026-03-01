@@ -4,7 +4,7 @@ from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy import and_, desc, func, select
+from sqlalchemy import and_, delete, desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user, verify_admin_token
@@ -42,6 +42,26 @@ def _safe_tz(tz_name: str) -> ZoneInfo:
 
 def _local_date_for_user(user: User) -> date:
     return datetime.now(tz=ZoneInfo("UTC")).astimezone(_safe_tz(user.timezone)).date()
+
+
+def _default_plan_items(user_id: int) -> list[PlanItem]:
+    return [
+        PlanItem(
+            user_id=user_id,
+            title="Минимальное действие на сегодня",
+            description="Сделайте версию привычки, которая занимает не больше 2 минут.",
+        ),
+        PlanItem(
+            user_id=user_id,
+            title="Якорь привычки",
+            description="Привяжите действие к уже существующему ритуалу (после/перед).",
+        ),
+        PlanItem(
+            user_id=user_id,
+            title="Подготовка окружения",
+            description="Сделайте полезную привычку очевидной, вредную - труднодоступной.",
+        ),
+    ]
 
 
 async def _recompute_streak(db: AsyncSession, user: User, current_date: date) -> tuple[int, int]:
@@ -162,27 +182,50 @@ async def complete_onboarding(
 
     existing_plan = await db.scalar(select(func.count(PlanItem.id)).where(PlanItem.user_id == user.id)) or 0
     if existing_plan == 0:
-        defaults = [
-            PlanItem(
-                user_id=user.id,
-                title="Минимальное действие на сегодня",
-                description="Сделайте версию привычки, которая занимает не больше 2 минут.",
-            ),
-            PlanItem(
-                user_id=user.id,
-                title="Якорь привычки",
-                description="Привяжите действие к уже существующему ритуалу (после/перед).",
-            ),
-            PlanItem(
-                user_id=user.id,
-                title="Подготовка окружения",
-                description="Сделайте полезную привычку очевидной, вредную - труднодоступной.",
-            ),
-        ]
-        db.add_all(defaults)
+        db.add_all(_default_plan_items(user.id))
         await db.commit()
 
     return {"ok": True}
+
+
+@router.post("/profile/reconfigure")
+async def reconfigure_profile(
+    payload: OnboardingRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    if not payload.privacy_accepted:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Нужно согласие с политикой")
+
+    user.display_name = payload.display_name
+    user.goal_type = payload.goal_type
+    user.habit_category = payload.habit_category
+    user.habit_name = payload.habit_name
+    user.habit_details = payload.habit_details
+    user.motivation = payload.motivation
+    user.baseline_frequency = payload.baseline_frequency
+    user.mentor_tone = payload.mentor_tone
+    user.reminder_time = payload.reminder_time
+    user.timezone = payload.timezone
+    user.privacy_accepted = payload.privacy_accepted
+    user.privacy_accepted_at = datetime.now(tz=ZoneInfo("UTC"))
+    user.onboarding_completed = True
+
+    user.streak_days = 0
+    user.best_streak = 0
+    user.message_count_today = 0
+    user.message_count_date = None
+    user.last_reminded_date = None
+
+    await db.execute(delete(PlanItem).where(PlanItem.user_id == user.id))
+    await db.execute(delete(HabitLog).where(HabitLog.user_id == user.id))
+    await db.execute(delete(ChatMessage).where(ChatMessage.user_id == user.id))
+    await db.execute(delete(UserChallenge).where(UserChallenge.user_id == user.id))
+
+    db.add_all(_default_plan_items(user.id))
+    await db.commit()
+
+    return {"ok": True, "reset": True}
 
 
 @router.get("/home")

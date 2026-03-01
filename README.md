@@ -33,6 +33,12 @@ python run.py
 ```
 
 Сервер поднимется на `http://localhost:8000`.
+`run.py` автоматически:
+- подтянет `.env`
+- если `WEBAPP_URL` локальный/пустой и запущен `ngrok`, подхватит публичный HTTPS URL
+- выставит `PUBLIC_API_BASE`
+- обновит `frontend/assets/config.js` (`API_BASE`)
+- настроит у бота кнопку меню Mini App
 
 ## Telegram Mini App
 1. Создайте бота через BotFather.

@@ -18,7 +18,8 @@ const state = {
 const onboardingState = {
   initialized: false,
   steps: [],
-  current: 0
+  current: 0,
+  mode: "initial"
 };
 let eventsBound = false;
 
@@ -253,6 +254,7 @@ async function loadBootstrap() {
   renderHome();
 
   if (!state.bootstrap.onboarding_completed) {
+    setOnboardingMode("initial");
     el("onboardingOverlay").classList.remove("hidden");
     resetOnboardingStepper();
   } else {
@@ -298,6 +300,62 @@ function setupOnboardingOptions() {
     otherEl.classList.toggle("hidden", categoryEl.value !== "Другое");
   };
   fill();
+}
+
+function setOnboardingMode(mode) {
+  onboardingState.mode = mode === "reconfigure" ? "reconfigure" : "initial";
+
+  const titleEl = el("onboardingTitle");
+  const subtitleEl = el("onboardingSubtitle");
+  const submitBtn = el("obSubmitBtn");
+  if (!titleEl || !subtitleEl || !submitBtn) return;
+
+  if (onboardingState.mode === "reconfigure") {
+    titleEl.textContent = "Изменение профиля";
+    subtitleEl.textContent = "Измените ответы. После подтверждения прогресс, план, чат и челленджи будут сброшены.";
+    submitBtn.textContent = "Подтвердить изменения";
+    return;
+  }
+
+  titleEl.textContent = "Первый запуск";
+  subtitleEl.textContent = "Ответьте на вопросы, чтобы настроить персональный трек привычки.";
+  submitBtn.textContent = "Завершить настройку";
+}
+
+function fillOnboardingFromProfile(profile) {
+  if (!profile) return;
+
+  el("obName").value = profile.display_name || state.bootstrap?.user?.display_name || "";
+  el("obGoal").value = profile.goal_type || "build";
+  setupOnboardingOptions();
+
+  const categoryEl = el("obCategory");
+  const otherEl = el("obCategoryOther");
+  const availableCategories = Array.from(categoryEl.options).map((option) => option.value);
+  const category = profile.habit_category || "";
+
+  if (category && availableCategories.includes(category) && category !== "Другое") {
+    categoryEl.value = category;
+    otherEl.value = "";
+    otherEl.classList.add("hidden");
+  } else if (category) {
+    categoryEl.value = "Другое";
+    otherEl.value = category;
+    otherEl.classList.remove("hidden");
+  } else {
+    categoryEl.value = availableCategories[0] || "Другое";
+    otherEl.value = "";
+    otherEl.classList.toggle("hidden", categoryEl.value !== "Другое");
+  }
+
+  el("obHabitName").value = profile.habit_name || "";
+  el("obHabitDetails").value = profile.habit_details || "";
+  el("obMotivation").value = profile.motivation || "";
+  el("obBaseline").value = profile.baseline_frequency || "";
+  el("obTone").value = profile.mentor_tone || "neutral";
+  el("obReminder").value = profile.reminder_time || "09:00";
+  el("obTimezone").value = profile.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
+  el("obPrivacy").checked = true;
 }
 
 function showOnboardingStep(index) {
@@ -359,6 +417,18 @@ function initOnboardingStepper() {
 function resetOnboardingStepper() {
   if (!onboardingState.initialized) return;
   showOnboardingStep(0);
+}
+
+function openOnboardingForReconfigure() {
+  if (!state.profile) {
+    alert("Профиль еще не загружен. Попробуйте снова через пару секунд.");
+    return;
+  }
+
+  setOnboardingMode("reconfigure");
+  fillOnboardingFromProfile(state.profile);
+  el("onboardingOverlay").classList.remove("hidden");
+  resetOnboardingStepper();
 }
 
 function setupEvents() {
@@ -436,6 +506,8 @@ function setupEvents() {
     }
   };
 
+  el("profileReconfigureBtn").onclick = openOnboardingForReconfigure;
+
   el("onboardingForm").onsubmit = async (e) => {
     e.preventDefault();
 
@@ -447,8 +519,16 @@ function setupEvents() {
       return;
     }
 
+    const isReconfigure = onboardingState.mode === "reconfigure";
+    if (isReconfigure) {
+      const confirmed = confirm(
+        "Подтвердите изменения. Будут сброшены прогресс, текущий план, история чата и участие в челленджах."
+      );
+      if (!confirmed) return;
+    }
+
     try {
-      await api("/api/onboarding", {
+      await api(isReconfigure ? "/api/profile/reconfigure" : "/api/onboarding", {
         method: "POST",
         body: JSON.stringify({
           display_name: el("obName").value.trim(),
@@ -466,7 +546,11 @@ function setupEvents() {
       });
 
       el("onboardingOverlay").classList.add("hidden");
-      await initData();
+      setOnboardingMode("initial");
+      await Promise.all([loadBootstrap(), loadPlan(), loadChallenges(), loadProfile()]);
+      if (isReconfigure) {
+        alert("Профиль обновлен. Прогресс и связанные данные сброшены.");
+      }
     } catch (err) {
       alert(err.message);
     }
@@ -517,6 +601,7 @@ async function initData() {
   el("obReminder").value = "09:00";
 
   setupOnboardingOptions();
+  setOnboardingMode("initial");
   initOnboardingStepper();
   setupEvents();
 

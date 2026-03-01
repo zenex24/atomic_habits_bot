@@ -81,6 +81,9 @@
           <textarea id="profileDetails" placeholder="Описание привычки" maxlength="2000"></textarea>
           <button class="primary" type="submit">Сохранить</button>
         </form>
+        <button id="profileReconfigureBtn" class="danger profile-reconfigure-btn" type="button">
+          Перенастроить цель и привычку (сброс прогресса)
+        </button>
       </div>
       <div class="card">
         <h3>Статистика</h3>
@@ -99,8 +102,8 @@
 
   <div id="onboardingOverlay" class="overlay hidden">
     <div class="modal">
-      <h2>Первый запуск</h2>
-      <p class="muted">Ответьте на вопросы, чтобы настроить персональный трек привычки.</p>
+      <h2 id="onboardingTitle">Первый запуск</h2>
+      <p id="onboardingSubtitle" class="muted">Ответьте на вопросы, чтобы настроить персональный трек привычки.</p>
       <blockquote class="onboarding-quote">
         Маленькие изменения часто кажутся незначительными, пока вы не пересечете критический порог.
         Самые мощные результаты любого процесса происходят со временем.
@@ -182,7 +185,7 @@
     </div>
   </div>
 
-  <script src="./assets/config.js?v=10"></script>
-  <script src="./assets/app.js?v=10"></script>
+  <script src="./assets/config.js?v=11"></script>
+  <script src="./assets/app.js?v=12"></script>
 </body>
 </html>
